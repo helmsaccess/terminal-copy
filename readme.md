@@ -40,4 +40,4 @@ adapted here for Terminal Copy's focused copying workflow.
 
 ## License
 
-Terminal Copy is licensed under the GNU General Public License, version 2 or later.
+Terminal Copy is licensed under the GNU General Public License, version 2 only (`GPL-2.0-only`).

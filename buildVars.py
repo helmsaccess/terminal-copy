@@ -44,7 +44,7 @@ including available scrollback outside the visible viewport."""),
 	# Do not change unless you know what you are doing!
 	addon_updateChannel=None,
 	# Add-on license such as GPL 2
-	addon_license="GNU General Public License version 2 or later",
+	addon_license="GNU General Public License version 2 only",
 	# URL for the license document the ad-on is licensed under
 	addon_licenseURL="https://github.com/helmsaccess/terminal-copy/blob/main/COPYING.txt",
 )
