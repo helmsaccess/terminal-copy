@@ -2,6 +2,11 @@
 
 Terminal Copy is an NVDA add-on for copying regions from Windows Terminal with the review cursor.
 
+Its two-mark interaction is adapted from
+[Terminal Access for NVDA](https://github.com/PratikP1/Terminal-Access-for-NVDA) by Pratik Patel.
+Terminal Access in turn credits [TDSR](https://github.com/tspivey/tdsr) by Tyler Spivey and
+[Speakup](https://github.com/linux-speakup/speakup), the Linux kernel screen reader, as inspirations.
+
 ## Requirements
 
 Terminal Copy version 0.1 requires NVDA 2026.1 or later and the Windows Terminal application.
@@ -33,10 +38,6 @@ which Windows Terminal has already discarded from its buffer cannot be copied.
 Lines containing only spaces or other whitespace inside the selected text are copied as empty lines.
 Whitespace-only lines at the beginning or end are omitted. Trailing whitespace is removed from every
 line, while leading indentation on lines containing visible text is preserved.
-
-The two-mark interaction is inspired by
-[Terminal Access for NVDA](https://github.com/PratikP1/Terminal-Access-for-NVDA) by Pratik Patel and is
-adapted here for Terminal Copy's focused copying workflow.
 
 ## License
 

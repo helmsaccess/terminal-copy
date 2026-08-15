@@ -139,6 +139,11 @@ class TestManifestContract(unittest.TestCase):
 		self.assertEqual("https://github.com/helmsaccess/terminal-copy", manifest["url"])
 		self.assertEqual("2026.1.0", manifest["minimumNVDAVersion"])
 		self.assertEqual("2026.1.1", manifest["lastTestedNVDAVersion"])
+		self.assertIn("Pratik Patel", manifest["description"])
+		self.assertIn("https://github.com/PratikP1/Terminal-Access-for-NVDA", manifest["description"])
+		self.assertIn("TDSR by Tyler Spivey", manifest["description"])
+		self.assertIn("https://github.com/tspivey/tdsr", manifest["description"])
+		self.assertIn("https://github.com/linux-speakup/speakup", manifest["description"])
 		self.assertNotIn("development", manifest["changelog"].casefold())
 		self.assertNotIn("sourceURL", manifest)
 		self.assertNotIn("license", manifest)
@@ -185,6 +190,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("<h1>Terminal Copy</h1>", html)
 		self.assertIn("NVDA+R", html)
 		self.assertIn("NVDA+C", html)
+		self.assertLess(html.index("Pratik Patel"), html.index("<h2>Requirements</h2>"))
 		self.assertNotIn("development version", html.casefold())
 
 	def testGermanHelpGeneratesInstallableHtml(self) -> None:
@@ -207,6 +213,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("NVDA+C", html)
 		self.assertIn("Leerraum", html)
 		self.assertIn("Pratik Patel", html)
+		self.assertLess(html.index("Pratik Patel"), html.index("<h2>Voraussetzungen</h2>"))
 		self.assertNotIn("entwicklungsversion", html.casefold())
 
 	def testGermanCatalogSourceExists(self) -> None:
@@ -215,6 +222,8 @@ class TestManifestContract(unittest.TestCase):
 		text = catalog.read_text(encoding="utf-8")
 		self.assertIn('"Language: de\\n"', text)
 		self.assertIn('msgstr "Bereichsmarken gelöscht"', text)
+		self.assertIn("Terminal Access for NVDA von Pratik Patel", text)
+		self.assertIn("TDSR von Tyler Spivey und Speakup", text)
 		self.assertNotIn("#, fuzzy", text)
 
 	def testLocalizedTemplateContainsOnlyLocalizableOfficialFields(self) -> None:
