@@ -3,6 +3,12 @@
 Terminal Copy ist eine NVDA-Erweiterung zum Kopieren von Bereichen aus Windows Terminal mit dem
 NVDA-Cursor.
 
+Die Bedienung mit zwei Marken wurde aus
+[Terminal Access for NVDA](https://github.com/PratikP1/Terminal-Access-for-NVDA) von Pratik Patel
+übernommen. Terminal Access nennt seinerseits [TDSR](https://github.com/tspivey/tdsr) von Tyler Spivey
+und [Speakup](https://github.com/linux-speakup/speakup), den Linux-Kernel-Screenreader, als
+Inspirationen.
+
 ## Voraussetzungen
 
 Terminal Copy Version 0.1 benötigt NVDA 2026.1 oder neuer sowie die Anwendung Windows Terminal.
@@ -37,10 +43,6 @@ aus dem Puffer entfernte Inhalte können nicht kopiert werden.
 Zeilen innerhalb des ausgewählten Texts, die nur Leerzeichen oder anderen Leerraum enthalten, werden
 als leere Zeilen kopiert. Solche Zeilen am Anfang oder Ende werden entfernt. Nachgestellter Leerraum
 wird aus jeder Zeile entfernt; führende Einrückung vor sichtbarem Text bleibt erhalten.
-
-Die Bedienung mit zwei Marken wurde von
-[Terminal Access for NVDA](https://github.com/PratikP1/Terminal-Access-for-NVDA) von Pratik Patel
-inspiriert und für den gezielten Kopierablauf von Terminal Copy angepasst.
 
 ## Lizenz
 

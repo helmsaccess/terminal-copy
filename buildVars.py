@@ -21,7 +21,12 @@ addon_info = AddonInfo(
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
 	addon_description=_("""Copies regions from Windows Terminal using NVDA's review cursor,
-including available scrollback outside the visible viewport."""),
+including available scrollback outside the visible viewport.
+The two-mark interaction is adapted from Terminal Access for NVDA by Pratik Patel:
+https://github.com/PratikP1/Terminal-Access-for-NVDA
+Terminal Access credits TDSR by Tyler Spivey and Speakup as inspirations:
+https://github.com/tspivey/tdsr
+https://github.com/linux-speakup/speakup"""),
 	# version
 	addon_version="0.1",
 	# Brief changelog for this version
