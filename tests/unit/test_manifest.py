@@ -137,7 +137,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertEqual("Emanuel Helms <emanuel@helmsaccess.de>", manifest["author"])
 		self.assertEqual("https://github.com/helmsaccess/terminal-copy", manifest["url"])
 		self.assertEqual("2026.1.0", manifest["minimumNVDAVersion"])
-		self.assertEqual("2026.1.0", manifest["lastTestedNVDAVersion"])
+		self.assertEqual("2026.1.1", manifest["lastTestedNVDAVersion"])
 		self.assertNotIn("development", manifest["changelog"].casefold())
 		self.assertNotIn("sourceURL", manifest)
 		self.assertNotIn("license", manifest)

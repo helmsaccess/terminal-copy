@@ -60,6 +60,7 @@ class TestBuiltAddon(unittest.TestCase):
 			)
 		self.assertIn("name = terminalCopy", baseManifest)
 		self.assertIn("version = 0.1", baseManifest)
+		self.assertIn("lastTestedNVDAVersion = 2026.1.1", baseManifest)
 		self.assertIn("updateChannel = None", baseManifest)
 		self.assertNotIn("development", baseManifest.casefold())
 		self.assertIn('summary = "Terminal Copy"', germanManifest)
