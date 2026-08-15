@@ -51,6 +51,7 @@ System, developer, and explicit user instructions take precedence.
   tools, test workspaces, reproductions, and reports. Do not derive the abbreviation
   from the repository owner, organization, branch, or current task. Neither auxiliary
   directory replaces documented runtime paths or tool-owned ignored output directories.
+- For this add-on, the fixed add-on-specific auxiliary directory is `../tc-aux/`.
 - Never commit private paths, hostnames, usernames, credentials, tokens, or secrets.
 - Follow the conventions of the component and upstream APIs being changed.
 - Avoid meta-commentary about instructions, process, or text organization. State the
@@ -88,6 +89,12 @@ System, developer, and explicit user instructions take precedence.
 
 ## Accessibility and NVDA integration
 
+- Keep Windows Terminal-specific scripts, events, UIA access, and lifecycle in
+  `addon/appModules/windowsterminal.py` or its private package. Add a global plugin
+  only for behavior that genuinely requires process-wide lifetime or executable
+  mapping, and document and test that exception.
+- Define contextual commands with NVDA's `@script` decorator, including translated
+  descriptions and categories, so bindings remain discoverable and remappable.
 - Use speech, Braille, tones, and focus changes intentionally; avoid duplicate or
   surprising output.
 - Respect NVDA configuration profiles, sleep mode, input help, secure mode, and the
@@ -122,6 +129,9 @@ System, developer, and explicit user instructions take precedence.
 
 - Use the official SCons entry points and extend them only for a demonstrated project
   need.
+- Keep the base and translated manifest templates aligned with the current official
+  AddonTemplate field sets. Strict tests must validate the templates, rendered scalar
+  values, compatibility range, update channel, and installed HTML help contract.
 - Configure the add-on through `buildVars.py` and source templates instead of editing
   generated manifests, catalogs, HTML, or package archives.
 - Keep reproducible generated output out of version control unless the repository

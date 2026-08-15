@@ -1,0 +1,3 @@
+from textInfos import TextInfo
+
+class UIATextInfo(TextInfo): ...

@@ -1,0 +1,6 @@
+class AppModule:
+	processID: int
+	appName: str
+
+	def __init__(self, processID: int, appName: str | None = None) -> None: ...
+	def terminate(self) -> None: ...
