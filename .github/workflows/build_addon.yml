@@ -2,12 +2,11 @@ name: build addon
 
 on:
   push:
-    tags: ["*"]
-    # To build on main/master branch, uncomment the following line:
-    # branches: [ main , master ]
+    tags: ["v*"]
+    branches: [main]
 
   pull_request:
-    branches: [ main, master ]
+    branches: [main]
 
   workflow_dispatch:
   workflow_call:
@@ -24,20 +23,36 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v7
     - name: Install uv
-      uses: astral-sh/setup-uv@v9.0.0
+      uses: astral-sh/setup-uv@v10.0.0
       with:
         enable-cache: true
     - name: Install dependencies
       run: |
         sudo apt-get update  -y
         sudo apt-get install -y gettext
-        uv sync
+        uv sync --locked
 
     - name: Code checks
       run: export PREK_SKIP=no-commit-to-branch; uv run prek run --all-files
 
-    - name: building addon
-      run: uv run scons && uv run scons pot
+    - name: Run unit tests
+      run: uv run python -m unittest discover -s tests/unit -v
+
+    - name: Verify release tag
+      if: startsWith(github.ref, 'refs/tags/')
+      shell: bash
+      run: |
+        addon_version="$(uv run python -c 'import buildVars; print(buildVars.addon_info["addon_version"])')"
+        if [[ "$GITHUB_REF_NAME" != "v$addon_version" ]]; then
+          echo "Release tag $GITHUB_REF_NAME does not match add-on version $addon_version" >&2
+          exit 1
+        fi
+
+    - name: Build add-on and translation template
+      run: uv run scons pot && uv run scons
+
+    - name: Validate packaged add-on
+      run: uv run python tests/package/test_built_addon.py
 
     - uses: actions/upload-artifact@v7
       with:

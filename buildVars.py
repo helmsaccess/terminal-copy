@@ -20,12 +20,13 @@ addon_info = AddonInfo(
 	addon_summary=_("Terminal Copy"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
-	addon_description=_("""An NVDA add-on for copying content from Windows Terminal."""),
+	addon_description=_("""Copies regions from Windows Terminal using NVDA's review cursor,
+including available scrollback outside the visible viewport."""),
 	# version
 	addon_version="0.1",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
-	addon_changelog=_("""Initial development version."""),
+	addon_changelog=_("""Initial release with review-cursor region copying."""),
 	# Author(s)
 	addon_author="Emanuel Helms <emanuel@helmsaccess.de>",
 	# URL for the add-on documentation support
@@ -35,13 +36,13 @@ addon_info = AddonInfo(
 	# Documentation file name
 	addon_docFileName="readme.html",
 	# Minimum NVDA version supported (e.g. "2019.3.0", minor version is optional)
-	addon_minimumNVDAVersion=None,
+	addon_minimumNVDAVersion="2026.1.0",
 	# Last NVDA version supported/tested (e.g. "2024.4.0", ideally more recent than minimum version)
-	addon_lastTestedNVDAVersion=None,
+	addon_lastTestedNVDAVersion="2026.1.1",
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
-	addon_updateChannel="dev",
+	addon_updateChannel=None,
 	# Add-on license such as GPL 2
 	addon_license="GNU General Public License version 2 or later",
 	# URL for the license document the ad-on is licensed under
@@ -56,7 +57,10 @@ addon_info = AddonInfo(
 # pythonSources = ["addon/globalPlugins/*.py"]
 # For more information on SCons Glob expressions please take a look at:
 # https://scons.org/doc/production/HTML/scons-user/apd.html
-pythonSources: list[str] = []
+pythonSources: list[str] = [
+	"addon/appModules/*.py",
+	"addon/appModules/terminalCopy/*.py",
+]
 
 # Files that contain strings for translation. Usually your python sources
 i18nSources: list[str] = pythonSources + ["buildVars.py"]
@@ -65,7 +69,11 @@ i18nSources: list[str] = pythonSources + ["buildVars.py"]
 # Paths are relative to the addon directory, not to the root directory of your addon sources.
 # You can either list every file (using ""/") as a path separator,
 # or use glob expressions.
-excludedFiles: list[str] = []
+excludedFiles: list[str] = [
+	"*.md",
+	"*.po",
+	"*.pyc",
+]
 
 # Base language for the NVDA add-on
 # If your add-on is written in a language other than english, modify this variable.

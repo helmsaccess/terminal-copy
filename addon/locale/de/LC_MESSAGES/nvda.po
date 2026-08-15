@@ -1,0 +1,108 @@
+# German translations for Terminal Copy.
+# Copyright (C) 2026 Emanuel Helms
+# This file is distributed under the same license as the terminalCopy package.
+# Emanuel Helms <emanuel@helmsaccess.de>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: terminalCopy 0.1\n"
+"Report-Msgid-Bugs-To: nvda-translations@groups.io\n"
+"POT-Creation-Date: 2026-08-15 13:09+0200\n"
+"PO-Revision-Date: 2026-08-15 13:20+0200\n"
+"Last-Translator: Emanuel Helms <emanuel@helmsaccess.de>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: Name of the section containing Terminal Copy commands in NVDA's Input Gestures dialog.
+#. Add-on summary/title, usually the user visible name of the add-on
+#. Translators: Summary/title for this add-on
+#. to be shown on installation and add-on information found in add-on store
+#: addon/appModules/windowsterminal.py:35 buildVars.py:20
+msgid "Terminal Copy"
+msgstr "Terminal Copy"
+
+#. Translators: Description of the command that marks a region using the review cursor.
+#: addon/appModules/windowsterminal.py:73
+msgid "Set or clear a Terminal Copy region mark"
+msgstr "Eine Bereichsmarke für Terminal Copy setzen oder löschen"
+
+#. Translators: Announced after both Terminal Copy region marks are cleared.
+#: addon/appModules/windowsterminal.py:82
+msgid "Region marks cleared"
+msgstr "Bereichsmarken gelöscht"
+
+#. Translators: Announced when the review cursor is not in Windows Terminal's UIA text.
+#: addon/appModules/windowsterminal.py:87
+msgid "Move the review cursor to Windows Terminal text first"
+msgstr "Bewegen Sie zuerst den NVDA-Cursor auf Text in Windows Terminal"
+
+#. Translators: Announced when region marks are placed in different terminal tabs or buffers.
+#: addon/appModules/windowsterminal.py:93
+msgid "Both marks must be in the same terminal buffer"
+msgstr "Beide Marken müssen sich im selben Terminalpuffer befinden"
+
+#. Translators: Announced after the first Terminal Copy region mark is set.
+#: addon/appModules/windowsterminal.py:97
+msgid "Start mark set"
+msgstr "Anfangsmarke gesetzt"
+
+#. Translators: Announced after the second Terminal Copy region mark is set.
+#: addon/appModules/windowsterminal.py:100
+msgid "End mark set"
+msgstr "Endmarke gesetzt"
+
+#. Translators: Description of the command that copies the marked Windows Terminal region.
+#: addon/appModules/windowsterminal.py:104
+msgid "Copy the marked Windows Terminal region"
+msgstr "Den markierten Bereich in Windows Terminal kopieren"
+
+#. Translators: Announced when another Terminal Copy operation is still running.
+#: addon/appModules/windowsterminal.py:112
+msgid "A copy operation is already in progress"
+msgstr "Ein Kopiervorgang läuft bereits"
+
+#. Translators: Announced when copy is requested before both region marks are set.
+#: addon/appModules/windowsterminal.py:118
+msgid "Set start and end marks first"
+msgstr "Setzen Sie zuerst Anfangs- und Endmarke"
+
+#. Translators: Announced when saved UIA ranges are no longer valid.
+#. Translators: Announced when a saved region cannot be accessed from the Windows lock screen.
+#: addon/appModules/windowsterminal.py:123
+#: addon/appModules/windowsterminal.py:127
+msgid "The marked region is no longer available"
+msgstr "Der markierte Bereich ist nicht mehr verfügbar"
+
+#. Translators: Announced while a potentially large terminal region is copied.
+#: addon/appModules/windowsterminal.py:137
+msgid "Copying marked region"
+msgstr "Markierter Bereich wird kopiert"
+
+#. Translators: Announced after the marked terminal region is copied successfully.
+#: addon/appModules/windowsterminal.py:171
+msgid "Marked region copied"
+msgstr "Markierter Bereich wurde kopiert"
+
+#. Translators: Announced when the marked terminal region could not be copied.
+#: addon/appModules/windowsterminal.py:174
+msgid "Unable to copy the marked region"
+msgstr "Der markierte Bereich konnte nicht kopiert werden"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-on store
+#: buildVars.py:23
+msgid ""
+"Copies regions from Windows Terminal using NVDA's review cursor,\n"
+"including available scrollback outside the visible viewport."
+msgstr ""
+"Kopiert Bereiche aus Windows Terminal mit dem NVDA-Cursor,\n"
+"einschließlich verfügbarer Inhalte des Bildlaufpuffers außerhalb des sichtbaren Bereichs."
+
+#. Brief changelog for this version
+#. Translators: what's new content for the add-on version to be shown in the add-on store
+#: buildVars.py:29
+msgid "Initial release with review-cursor region copying."
+msgstr "Erste Veröffentlichung zum Kopieren von Bereichen mit dem NVDA-Cursor."

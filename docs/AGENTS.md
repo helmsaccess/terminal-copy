@@ -20,6 +20,10 @@ These rules apply to `docs/` and supplement the repository-wide `AGENTS.md`.
 
 ## Sources of truth
 
+- Treat the root `readme.md` as the canonical English guide and
+  `addon/doc/de/readme.md` as its maintained German counterpart. SCons generates the
+  installed `doc/<language>/readme.html`; keep that name aligned with
+  `addon_docFileName` and never edit generated copies.
 - Verify behavior against current code, tests, manifests, translation catalogs, and
   official NVDA documentation before changing a claim.
 - Before web retrieval, inspect `../nvda-shared-aux/` for durable NVDA, AddonTemplate,
