@@ -44,4 +44,4 @@ inspiriert und für den gezielten Kopierablauf von Terminal Copy angepasst.
 
 ## Lizenz
 
-Terminal Copy steht unter der GNU General Public License, Version 2 oder neuer.
+Terminal Copy steht ausschließlich unter Version 2 der GNU General Public License (`GPL-2.0-only`).

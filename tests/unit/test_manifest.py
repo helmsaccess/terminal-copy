@@ -6,6 +6,7 @@ from pathlib import Path, PurePath
 import re
 import shutil
 import tempfile
+import tomllib
 import unittest
 from urllib.parse import urlsplit
 
@@ -143,9 +144,20 @@ class TestManifestContract(unittest.TestCase):
 		self.assertNotIn("license", manifest)
 		self.assertEqual(manifest["url"], buildVars.addon_info["addon_sourceURL"])
 		self.assertEqual(
-			"GNU General Public License version 2 or later",
+			"GNU General Public License version 2 only",
 			buildVars.addon_info["addon_license"],
 		)
+
+	def testLicenseMetadataUsesOneRecognizableGPLv2File(self) -> None:
+		"""Project metadata declares GPLv2-only and points to one canonical license file."""
+		project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+		self.assertEqual("GPL-2.0-only", project["license"])
+		self.assertEqual(["COPYING.txt"], project["license-files"])
+		licenseNames = ("COPYING", "COPYING.md", "COPYING.txt", "LICENSE", "LICENSE.md", "LICENSE.txt")
+		self.assertEqual([ROOT / "COPYING.txt"], [ROOT / name for name in licenseNames if (ROOT / name).is_file()])
+		licenseText = (ROOT / "COPYING.txt").read_text(encoding="utf-8")
+		self.assertIn("GNU GENERAL PUBLIC LICENSE", licenseText)
+		self.assertIn("Version 2, June 1991", licenseText)
 
 	def testInstalledHelpNameAndGeneratedHtmlStayAligned(self) -> None:
 		"""The manifest help target is portable HTML generated from the concise guide."""
