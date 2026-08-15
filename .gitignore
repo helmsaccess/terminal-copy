@@ -1,0 +1,48 @@
+# Python bytecode and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Test and coverage output
+.coverage
+.coverage.*
+htmlcov/
+
+# Temporary and diagnostic files
+*.log
+*.tmp
+*.bak
+*~
+
+# Operating-system and IDE metadata
+.DS_Store
+[Dd]esktop.ini
+[Tt]humbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+.idea/
+
+# Local agent state and per-worktree instructions
+/.agents/
+/.codex/
+/AGENTS.override.md
+
+# Common build output directories
+/build/
+/dist/
+/tmp/
+
+# Add-onTemplate generated files
+addon/doc/*.css
+addon/doc/en/
+*_docHandler.py
+*.html
+manifest.ini
+*.mo
+*.pot
+*.nvda-addon
+.sconsign.dblite
+/[0-9]*.[0-9]*.[0-9]*.json
+*.egg-info
