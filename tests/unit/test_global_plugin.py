@@ -29,10 +29,10 @@ class TestGlobalPlugin(unittest.TestCase):
 		cls.calls: list[tuple[str, ...]] = []
 		appModuleHandler = ModuleType("appModuleHandler")
 		appModuleHandler.registerExecutableWithAppModule = lambda executable, appModule: cls.calls.append(
-			("register", executable, appModule)
+			("register", executable, appModule),
 		)
 		appModuleHandler.unregisterExecutable = lambda executable: cls.calls.append(
-			("unregister", executable)
+			("unregister", executable),
 		)
 		globalPluginHandler = ModuleType("globalPluginHandler")
 		globalPluginHandler.GlobalPlugin = FakeGlobalPlugin
