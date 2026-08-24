@@ -1,0 +1,3 @@
+from appModuleHandler import AppModule as NVDAAppModule
+
+class AppModule(NVDAAppModule): ...

@@ -1,4 +1,4 @@
-"""App module providing review-cursor copying in Windows Terminal."""
+"""Uniquely named app module providing review-cursor copying in Windows Terminal."""
 
 import threading
 from typing import TYPE_CHECKING, override
@@ -14,6 +14,17 @@ import queueHandler
 from scriptHandler import script
 import ui
 from utils.security import objectBelowLockScreenAndWindowsIsLocked
+
+# Preserve another add-on's direct Windows Terminal AppModule instead of competing for its module name.
+if TYPE_CHECKING:
+	from appModules.windowsterminal import AppModule as BaseAppModule
+else:
+	try:
+		from appModules.windowsterminal import AppModule as BaseAppModule
+	except ModuleNotFoundError as error:
+		if error.name != "appModules.windowsterminal":
+			raise
+		BaseAppModule = appModuleHandler.AppModule
 
 from appModules.terminalCopy.selection import (
 	DifferentTextContainerError,
@@ -35,7 +46,7 @@ if TYPE_CHECKING:
 SCRIPT_CATEGORY = _("Terminal Copy")
 
 
-class AppModule(appModuleHandler.AppModule):
+class AppModule(BaseAppModule):
 	"""Add review-cursor region copying to Windows Terminal."""
 
 	def __init__(self, processID: int, appName: str | None = None) -> None:
@@ -47,9 +58,9 @@ class AppModule(appModuleHandler.AppModule):
 	@override
 	def terminate(self) -> None:
 		"""Release saved UIA ranges when Windows Terminal exits or the add-on reloads."""
-		super().terminate()
 		self._isTerminating = True
 		self._selection.clear()
+		super().terminate()
 
 	def _getReviewTextInfo(self) -> UIATextInfo | None:
 		"""Return the current review position when it is Windows Terminal UIA text."""

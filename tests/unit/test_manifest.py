@@ -126,15 +126,15 @@ class TestManifestContract(unittest.TestCase):
 		self.assertTrue(url.hostname)
 		self.assertIsNone(url.username)
 		self.assertIsNone(url.password)
-		self.assertEqual("None", manifest["updateChannel"])
-		self.assertIsNone(buildVars.addon_info["addon_updateChannel"])
+		self.assertEqual("dev", manifest["updateChannel"])
+		self.assertEqual("dev", buildVars.addon_info["addon_updateChannel"])
 
 	def testProjectIdentityAndBuildOnlyMetadataStayAligned(self) -> None:
 		"""User identity, compatibility, and Store-only fields remain intentional."""
 		manifest = parseManifest(OFFICIAL_BASE_TEMPLATE.format(**buildVars.addon_info))
 		self.assertEqual("terminalCopy", manifest["name"])
 		self.assertEqual("Terminal Copy", manifest["summary"])
-		self.assertEqual("0.1", manifest["version"])
+		self.assertEqual("0.1.1", manifest["version"])
 		self.assertEqual("Emanuel Helms <emanuel@helmsaccess.de>", manifest["author"])
 		self.assertEqual("https://github.com/helmsaccess/terminal-copy", manifest["url"])
 		self.assertEqual("2026.1.0", manifest["minimumNVDAVersion"])
@@ -144,7 +144,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("TDSR by Tyler Spivey", manifest["description"])
 		self.assertIn("https://github.com/tspivey/tdsr", manifest["description"])
 		self.assertIn("https://github.com/linux-speakup/speakup", manifest["description"])
-		self.assertNotIn("development", manifest["changelog"].casefold())
+		self.assertIn("unique AppModule mapping", manifest["changelog"])
 		self.assertNotIn("sourceURL", manifest)
 		self.assertNotIn("license", manifest)
 		self.assertEqual(manifest["url"], buildVars.addon_info["addon_sourceURL"])
@@ -159,7 +159,9 @@ class TestManifestContract(unittest.TestCase):
 		self.assertEqual("GPL-2.0-only", project["license"])
 		self.assertEqual(["COPYING.txt"], project["license-files"])
 		licenseNames = ("COPYING", "COPYING.md", "COPYING.txt", "LICENSE", "LICENSE.md", "LICENSE.txt")
-		self.assertEqual([ROOT / "COPYING.txt"], [ROOT / name for name in licenseNames if (ROOT / name).is_file()])
+		self.assertEqual(
+			[ROOT / "COPYING.txt"], [ROOT / name for name in licenseNames if (ROOT / name).is_file()],
+		)
 		licenseText = (ROOT / "COPYING.txt").read_text(encoding="utf-8")
 		self.assertIn("GNU GENERAL PUBLIC LICENSE", licenseText)
 		self.assertIn("Version 2, June 1991", licenseText)
@@ -186,12 +188,12 @@ class TestManifestContract(unittest.TestCase):
 			)
 			html = htmlPath.read_text(encoding="utf-8")
 		self.assertIn('<html lang="en">', html)
-		self.assertIn("<title>Terminal Copy 0.1</title>", html)
+		self.assertIn("<title>Terminal Copy 0.1.1</title>", html)
 		self.assertIn("<h1>Terminal Copy</h1>", html)
 		self.assertIn("NVDA+R", html)
 		self.assertIn("NVDA+C", html)
 		self.assertLess(html.index("Pratik Patel"), html.index("<h2>Requirements</h2>"))
-		self.assertNotIn("development version", html.casefold())
+		self.assertIn("development version 0.1.1", html.casefold())
 
 	def testGermanHelpGeneratesInstallableHtml(self) -> None:
 		"""The German guide has equivalent tasks and generates localized HTML."""
@@ -214,7 +216,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("Leerraum", html)
 		self.assertIn("Pratik Patel", html)
 		self.assertLess(html.index("Pratik Patel"), html.index("<h2>Voraussetzungen</h2>"))
-		self.assertNotIn("entwicklungsversion", html.casefold())
+		self.assertIn("entwicklungsversion 0.1.1", html.casefold())
 
 	def testGermanCatalogSourceExists(self) -> None:
 		"""The German gettext source is present and identifies its locale."""
@@ -222,7 +224,8 @@ class TestManifestContract(unittest.TestCase):
 		text = catalog.read_text(encoding="utf-8")
 		self.assertIn('"Language: de\\n"', text)
 		self.assertIn('msgstr "Bereichsmarken gelöscht"', text)
-		self.assertIn("Terminal Access for NVDA von Pratik Patel", text)
+		self.assertIn("Terminal Access for NVDA von Pratik", text)
+		self.assertIn("Patel übernommen", text)
 		self.assertIn("TDSR von Tyler Spivey und Speakup", text)
 		self.assertNotIn("#, fuzzy", text)
 

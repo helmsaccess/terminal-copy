@@ -1,7 +1,12 @@
 # Build customizations
 # Change this file instead of sconstruct or manifest files, whenever possible.
 
-from site_scons.site_tools.NVDATool.typings import AddonInfo, BrailleTables, SymbolDictionaries, SpeechDictionaries
+from site_scons.site_tools.NVDATool.typings import (
+	AddonInfo,
+	BrailleTables,
+	SymbolDictionaries,
+	SpeechDictionaries,
+)
 
 # Since some strings in `addon_info` are translatable,
 # we need to include them in the .po files.
@@ -28,10 +33,12 @@ Terminal Access credits TDSR by Tyler Spivey and Speakup as inspirations:
 https://github.com/tspivey/tdsr
 https://github.com/linux-speakup/speakup"""),
 	# version
-	addon_version="0.1",
+	addon_version="0.1.1",
 	# Brief changelog for this version
-	# Translators: what's new content for the add-on version to be shown in the add-on store
-	addon_changelog=_("""Initial release with review-cursor region copying."""),
+	addon_changelog=_(
+		# Translators: What's new text for this add-on version in the Add-on Store.
+		"""Improves compatibility with other Windows Terminal add-ons by using a unique AppModule mapping.""",
+	),
 	# Author(s)
 	addon_author="Emanuel Helms <emanuel@helmsaccess.de>",
 	# URL for the add-on documentation support
@@ -47,7 +54,7 @@ https://github.com/linux-speakup/speakup"""),
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
-	addon_updateChannel=None,
+	addon_updateChannel="dev",
 	# Add-on license such as GPL 2
 	addon_license="GNU General Public License version 2 only",
 	# URL for the license document the ad-on is licensed under
@@ -65,6 +72,7 @@ https://github.com/linux-speakup/speakup"""),
 pythonSources: list[str] = [
 	"addon/appModules/*.py",
 	"addon/appModules/terminalCopy/*.py",
+	"addon/globalPlugins/*.py",
 ]
 
 # Files that contain strings for translation. Usually your python sources
