@@ -9,7 +9,7 @@ Terminal Access in turn credits [TDSR](https://github.com/tspivey/tdsr) by Tyler
 
 ## Requirements
 
-Terminal Copy version 0.1 requires NVDA 2026.1 or later and the Windows Terminal application.
+Terminal Copy version 0.1.1 requires NVDA 2026.1 or later and the Windows Terminal application.
 
 The add-on interface and installed help are available in English and German.
 
@@ -28,6 +28,13 @@ the same Windows Terminal buffer. NVDA announces each mark and whether copying s
 
 The commands appear in NVDA's Input Gestures dialog under the `Terminal Copy` category and can be
 remapped there.
+
+## Compatibility with other add-ons
+
+Terminal Copy works without another Windows Terminal add-on. It also preserves a direct
+`windowsterminal` AppModule supplied by another add-on, including that module's commands and event
+handling. NVDA supports only one add-on-defined executable mapping at a time, so an add-on which also
+remaps the `windowsterminal` executable may still conflict with Terminal Copy.
 
 ## Scrollback and limitations
 

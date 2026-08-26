@@ -11,7 +11,7 @@ Inspirationen.
 
 ## Voraussetzungen
 
-Terminal Copy Version 0.1 benötigt NVDA 2026.1 oder neuer sowie die Anwendung Windows Terminal.
+Terminal Copy Version 0.1.1 benötigt NVDA 2026.1 oder neuer sowie die Anwendung Windows Terminal.
 
 Die Oberfläche und die installierte Hilfe der Erweiterung sind auf Deutsch und Englisch verfügbar.
 
@@ -32,6 +32,14 @@ jede Marke und ob das Kopieren erfolgreich war.
 
 Die Befehle finden Sie im NVDA-Dialog „Tastenbefehle“ in der Kategorie `Terminal Copy` und können
 dort neu zugewiesen werden.
+
+## Kompatibilität mit anderen Erweiterungen
+
+Terminal Copy funktioniert ohne eine weitere Erweiterung für Windows Terminal. Die Erweiterung
+erhält außerdem ein direktes `windowsterminal`-AppModule einer anderen Erweiterung einschließlich
+dessen Befehlen und Ereignisbehandlung. NVDA unterstützt jeweils nur eine durch eine Erweiterung
+registrierte Programmzuordnung. Eine Erweiterung, die `windowsterminal` ebenfalls neu zuordnet, kann
+daher weiterhin mit Terminal Copy in Konflikt geraten.
 
 ## Bildlaufpuffer und Einschränkungen
 

@@ -19,9 +19,10 @@ import buildVars  # noqa: E402  # The repository root is added before importing 
 EXPECTED_FILES = frozenset(
 	(
 		"manifest.ini",
-		"appModules/windowsterminal.py",
+		"appModules/terminalCopyWindowsterminal.py",
 		"appModules/terminalCopy/__init__.py",
 		"appModules/terminalCopy/selection.py",
+		"globalPlugins/terminalCopy.py",
 		"locale/de/manifest.ini",
 		"locale/de/LC_MESSAGES/nvda.mo",
 		"doc/style.css",
@@ -59,10 +60,11 @@ class TestBuiltAddon(unittest.TestCase):
 				BytesIO(archive.read("locale/de/LC_MESSAGES/nvda.mo")),
 			)
 		self.assertIn("name = terminalCopy", baseManifest)
-		self.assertIn("version = 0.1", baseManifest)
+		self.assertIn("version = 0.1.1", baseManifest)
 		self.assertIn("lastTestedNVDAVersion = 2026.1.1", baseManifest)
 		self.assertIn("updateChannel = None", baseManifest)
 		self.assertNotIn("development", baseManifest.casefold())
+		self.assertIn("unique AppModule mapping", baseManifest)
 		self.assertIn('summary = "Terminal Copy"', germanManifest)
 		self.assertIn("Terminal Access for NVDA by Pratik Patel", baseManifest)
 		self.assertIn("Terminal Access for NVDA von Pratik Patel", germanManifest)

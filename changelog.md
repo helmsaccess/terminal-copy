@@ -1,3 +1,9 @@
+# Terminal Copy 0.1.1
+
+Terminal Copy now uses a uniquely named AppModule mapping. It continues to work on its own and can
+preserve the commands, events, overlays, and lifecycle of another add-on's direct Windows Terminal
+AppModule.
+
 # Terminal Copy 0.1
 
 Terminal Copy lets NVDA users mark and copy regions from Windows Terminal with the review cursor,

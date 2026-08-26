@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 from types import ModuleType
 import unittest
+from unittest import mock
 
 
 class FakeBaseAppModule:
@@ -20,6 +21,29 @@ class FakeBaseAppModule:
 
 	def terminate(self) -> None:
 		self.hasTerminated = True
+
+
+class FakeCompanionAppModule(FakeBaseAppModule):
+	"""Stand in for an unrelated add-on's direct Windows Terminal app module."""
+
+	def __init__(self, processID: int, appName: str | None = None) -> None:
+		super().__init__(processID, appName)
+		self.companionEvents: list[str] = []
+
+	def script_companionCommand(self, gesture: object) -> None:
+		self.companionEvents.append("script")
+
+	def event_gainFocus(self, obj: object, nextHandler) -> None:
+		self.companionEvents.append("event")
+		nextHandler()
+
+	def chooseNVDAObjectOverlayClasses(self, obj: object, clsList: list[type]) -> None:
+		self.companionEvents.append("overlay")
+		clsList.append(FakeUIATextInfo)
+
+	def terminate(self) -> None:
+		self.companionEvents.append("terminate")
+		super().terminate()
 
 
 class FakeUIATextInfo:
@@ -154,12 +178,13 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		}
 		cls._originalModules = {name: sys.modules.get(name) for name in cls._stubNames}
 		sys.modules.update(cls._stubNames)
-		cls.module = importlib.import_module("appModules.windowsterminal")
+		cls.moduleName = "appModules.terminalCopyWindowsterminal"
+		cls.module = importlib.import_module(cls.moduleName)
 		cls.module.threading.Thread = ImmediateThread
 
 	@classmethod
 	def tearDownClass(cls) -> None:
-		sys.modules.pop("appModules.windowsterminal", None)
+		sys.modules.pop(cls.moduleName, None)
 		for name, original in cls._originalModules.items():
 			if original is None:
 				sys.modules.pop(name, None)
@@ -201,6 +226,78 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		self.appModule.script_copyRegion(object())
 		self.assertEqual(self.copiedText, ["bcd"])
 		self.assertIn("Marked region copied", self.messages)
+
+	def testUsesNVDAAppModuleBaseWithoutCompanion(self) -> None:
+		"""Terminal Copy remains active when no direct Windows Terminal app module exists."""
+		self.assertIs(self.module.BaseAppModule, FakeBaseAppModule)
+		self.assertIsInstance(self.appModule, FakeBaseAppModule)
+
+	def testComposesWithDirectCompanionAppModule(self) -> None:
+		"""A direct app module keeps its scripts, events, overlays, and lifecycle."""
+		companionModule = ModuleType("appModules.windowsterminal")
+		companionModule.AppModule = FakeCompanionAppModule
+		originalModule = sys.modules.pop(self.moduleName)
+		try:
+			with mock.patch.dict(sys.modules, {"appModules.windowsterminal": companionModule}):
+				compatibleModule = importlib.import_module(self.moduleName)
+				compatibleModule.threading.Thread = ImmediateThread
+				compatibleAppModule = compatibleModule.AppModule(42, "windowsterminal")
+				self.assertIs(compatibleModule.BaseAppModule, FakeCompanionAppModule)
+				self.assertIsInstance(compatibleAppModule, FakeCompanionAppModule)
+				owner = type(
+					"CompatibleTerminalOwner",
+					(),
+					{"appModule": compatibleAppModule, "UIATextPattern": object()},
+				)()
+				self.api.getReviewPosition = lambda: FakeUIATextInfo("abcdef", 1, owner)
+				compatibleAppModule.script_toggleRegionMark(object())
+				self.api.getReviewPosition = lambda: FakeUIATextInfo("abcdef", 3, owner)
+				compatibleAppModule.script_toggleRegionMark(object())
+				compatibleAppModule.script_copyRegion(object())
+				compatibleAppModule.script_companionCommand(object())
+				hasCalledNextHandler = False
+
+				def nextHandler() -> None:
+					nonlocal hasCalledNextHandler
+					hasCalledNextHandler = True
+
+				compatibleAppModule.event_gainFocus(object(), nextHandler)
+				overlays: list[type] = []
+				compatibleAppModule.chooseNVDAObjectOverlayClasses(object(), overlays)
+				compatibleAppModule.terminate()
+				self.assertTrue(hasCalledNextHandler)
+				self.assertEqual(self.copiedText, ["bcd"])
+				self.assertEqual(overlays, [FakeUIATextInfo])
+				self.assertEqual(
+					compatibleAppModule.companionEvents,
+					["script", "event", "overlay", "terminate"],
+				)
+				self.assertTrue(compatibleAppModule.hasTerminated)
+		finally:
+			sys.modules.pop(self.moduleName, None)
+			sys.modules[self.moduleName] = originalModule
+
+	def testDoesNotHideCompanionImportFailure(self) -> None:
+		"""A missing dependency inside a companion module remains visible to NVDA."""
+		originalImport = builtins.__import__
+		originalModule = sys.modules.pop(self.moduleName)
+
+		def guardedImport(name, globals=None, locals=None, fromlist=(), level=0):
+			if name == "appModules.windowsterminal":
+				raise ModuleNotFoundError(
+					"Companion dependency is missing",
+					name="companionDependency",
+				)
+			return originalImport(name, globals, locals, fromlist, level)
+
+		try:
+			with mock.patch.object(builtins, "__import__", guardedImport):
+				with self.assertRaisesRegex(ModuleNotFoundError, "Companion dependency is missing") as caught:
+					importlib.import_module(self.moduleName)
+			self.assertEqual(caught.exception.name, "companionDependency")
+		finally:
+			sys.modules.pop(self.moduleName, None)
+			sys.modules[self.moduleName] = originalModule
 
 	def testMarkAnnouncementsUseAddonTranslation(self) -> None:
 		"""Mark announcements use the add-on catalog rather than NVDA's core catalog."""
