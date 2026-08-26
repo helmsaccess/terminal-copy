@@ -9,8 +9,7 @@ Terminal Access in turn credits [TDSR](https://github.com/tspivey/tdsr) by Tyler
 
 ## Requirements
 
-Terminal Copy development version 0.1.1 requires NVDA 2026.1 or later and the Windows Terminal
-application.
+Terminal Copy version 0.1.1 requires NVDA 2026.1 or later and the Windows Terminal application.
 
 The add-on interface and installed help are available in English and German.
 

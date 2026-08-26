@@ -1,4 +1,4 @@
-# Terminal Copy 0.1.1 (development)
+# Terminal Copy 0.1.1
 
 Terminal Copy now uses a uniquely named AppModule mapping. It continues to work on its own and can
 preserve the commands, events, overlays, and lifecycle of another add-on's direct Windows Terminal

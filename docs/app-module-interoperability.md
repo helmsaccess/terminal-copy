@@ -20,6 +20,5 @@ an executable alias for `windowsterminal`.
 
 Regression tests cover standalone fallback, registration and reload, companion inheritance,
 Terminal Copy copying while composed, companion scripts, events, overlays and lifecycle, visible
-companion import failures, and the exact packaged module layout. Release validation should also
-exercise NVDA startup, Plugin Reload, and add-on enable and disable order while Windows Terminal is
-running.
+companion import failures, and the exact packaged module layout. Manual validation for version 0.1.1
+confirmed combined operation with NVDA, Windows Terminal, and Neovim Access Link.

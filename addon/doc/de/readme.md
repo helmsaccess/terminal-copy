@@ -11,8 +11,7 @@ Inspirationen.
 
 ## Voraussetzungen
 
-Terminal Copy Entwicklungsversion 0.1.1 benötigt NVDA 2026.1 oder neuer sowie die Anwendung Windows
-Terminal.
+Terminal Copy Version 0.1.1 benötigt NVDA 2026.1 oder neuer sowie die Anwendung Windows Terminal.
 
 Die Oberfläche und die installierte Hilfe der Erweiterung sind auf Deutsch und Englisch verfügbar.
 

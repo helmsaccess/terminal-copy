@@ -126,8 +126,8 @@ class TestManifestContract(unittest.TestCase):
 		self.assertTrue(url.hostname)
 		self.assertIsNone(url.username)
 		self.assertIsNone(url.password)
-		self.assertEqual("dev", manifest["updateChannel"])
-		self.assertEqual("dev", buildVars.addon_info["addon_updateChannel"])
+		self.assertEqual("None", manifest["updateChannel"])
+		self.assertIsNone(buildVars.addon_info["addon_updateChannel"])
 
 	def testProjectIdentityAndBuildOnlyMetadataStayAligned(self) -> None:
 		"""User identity, compatibility, and Store-only fields remain intentional."""
@@ -193,7 +193,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("NVDA+R", html)
 		self.assertIn("NVDA+C", html)
 		self.assertLess(html.index("Pratik Patel"), html.index("<h2>Requirements</h2>"))
-		self.assertIn("development version 0.1.1", html.casefold())
+		self.assertNotIn("development version", html.casefold())
 
 	def testGermanHelpGeneratesInstallableHtml(self) -> None:
 		"""The German guide has equivalent tasks and generates localized HTML."""
@@ -216,7 +216,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("Leerraum", html)
 		self.assertIn("Pratik Patel", html)
 		self.assertLess(html.index("Pratik Patel"), html.index("<h2>Voraussetzungen</h2>"))
-		self.assertIn("entwicklungsversion 0.1.1", html.casefold())
+		self.assertNotIn("entwicklungsversion", html.casefold())
 
 	def testGermanCatalogSourceExists(self) -> None:
 		"""The German gettext source is present and identifies its locale."""
