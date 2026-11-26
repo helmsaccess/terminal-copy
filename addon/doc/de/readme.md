@@ -1,7 +1,7 @@
 # Terminal Copy
 
-Terminal Copy ist eine NVDA-Erweiterung zum Kopieren von Bereichen aus Windows Terminal mit dem
-NVDA-Cursor.
+Terminal Copy ist eine NVDA-Erweiterung zum Kopieren von Bereichen aus Windows Terminal und der
+klassischen Windows-Eingabeaufforderung mit dem NVDA-Cursor.
 
 Die Bedienung mit zwei Marken wurde aus
 [Terminal Access for NVDA](https://github.com/PratikP1/Terminal-Access-for-NVDA) von Pratik Patel
@@ -11,7 +11,8 @@ Inspirationen.
 
 ## Voraussetzungen
 
-Terminal Copy Version 0.1.1 benötigt NVDA 2026.1 oder neuer sowie die Anwendung Windows Terminal.
+Terminal Copy benötigt NVDA 2026.1 oder neuer. Es funktioniert in Windows Terminal und in
+`cmd.exe` im Windows-Konsolenhost.
 
 Die Oberfläche und die installierte Hilfe der Erweiterung sind auf Deutsch und Englisch verfügbar.
 
@@ -22,12 +23,13 @@ starten Sie NVDA nach Aufforderung neu.
 
 ## Einen Bereich kopieren
 
-1. Bewegen Sie den NVDA-Cursor in Windows Terminal auf das erste Zeichen und drücken Sie `NVDA+R`.
+1. Bewegen Sie den NVDA-Cursor in Windows Terminal oder der Eingabeaufforderung auf das erste
+   Zeichen und drücken Sie `NVDA+R`.
 2. Bewegen Sie ihn auf das letzte Zeichen und drücken Sie erneut `NVDA+R`.
 3. Drücken Sie `NVDA+C`, um den Bereich einschließlich der beiden markierten Zeichen zu kopieren.
 
 Drücken Sie `NVDA+R` ein drittes Mal, um beide Marken zu löschen. Sie können die Marken in beliebiger
-Reihenfolge setzen, sie müssen sich jedoch im selben Windows-Terminal-Puffer befinden. NVDA meldet
+Reihenfolge setzen, sie müssen sich jedoch im selben Terminalpuffer befinden. NVDA meldet
 jede Marke und ob das Kopieren erfolgreich war.
 
 Die Befehle finden Sie im NVDA-Dialog „Tastenbefehle“ in der Kategorie `Terminal Copy` und können
@@ -47,6 +49,11 @@ Terminal Copy verwendet die über NVDA bereitgestellten UI-Automation-Textbereic
 Terminal. Dadurch kann die Erweiterung verfügbare Inhalte des Bildlaufpuffers außerhalb des
 sichtbaren Bereichs kopieren, wenn der NVDA-Cursor sie erreichen kann. Bereits von Windows Terminal
 aus dem Puffer entfernte Inhalte können nicht kopiert werden.
+
+In der Eingabeaufforderung nutzt Terminal Copy den für NVDA verfügbaren Konsolentext.
+Bei älterer Konsolenunterstützung in NVDA müssen beide Marken im selben sichtbaren
+Ausschnitt liegen. Lassen Sie die Konsole im Vordergrund und setzen Sie die Marken
+nach dem Scrollen oder Ändern der Fenstergröße neu.
 
 Zeilen innerhalb des ausgewählten Texts, die nur Leerzeichen oder anderen Leerraum enthalten, werden
 als leere Zeilen kopiert. Solche Zeilen am Anfang oder Ende werden entfernt. Nachgestellter Leerraum

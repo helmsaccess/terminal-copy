@@ -60,17 +60,23 @@ class TestGlobalPlugin(unittest.TestCase):
 		FakeGlobalPlugin.lifecycle.clear()
 
 	def testRegistersUniqueAppModuleAndUnregistersOnce(self) -> None:
-		"""The plugin maps only Windows Terminal and releases its mapping once."""
+		"""The plugin maps the supported executables and releases each mapping once."""
 		plugin = self.module.GlobalPlugin()
 		self.assertEqual(FakeGlobalPlugin.lifecycle, ["base initialized"])
 		self.assertEqual(
 			self.calls,
-			[("register", "windowsterminal", "terminalCopyWindowsterminal")],
+			[
+				("register", "windowsterminal", "terminalCopyWindowsterminal"),
+				("register", "cmd", "terminalCopyConsole"),
+				("register", "conhost", "terminalCopyConsole"),
+			],
 		)
 		plugin.terminate()
 		plugin.terminate()
 		self.assertEqual(self.calls[-1], ("unregister", "windowsterminal"))
 		self.assertEqual(self.calls.count(("unregister", "windowsterminal")), 1)
+		self.assertEqual(self.calls.count(("unregister", "cmd")), 1)
+		self.assertEqual(self.calls.count(("unregister", "conhost")), 1)
 		self.assertEqual(
 			FakeGlobalPlugin.lifecycle,
 			["base initialized", "base terminated", "base terminated"],
@@ -83,11 +89,9 @@ class TestGlobalPlugin(unittest.TestCase):
 		secondPlugin = self.module.GlobalPlugin()
 		self.assertEqual(
 			self.calls,
-			[
-				("register", "windowsterminal", "terminalCopyWindowsterminal"),
-				("unregister", "windowsterminal"),
-				("register", "windowsterminal", "terminalCopyWindowsterminal"),
-			],
+			[("register", name, module) for name, module in self.module.APP_MODULE_MAPPINGS]
+			+ [("unregister", name) for name, _ in reversed(self.module.APP_MODULE_MAPPINGS)]
+			+ [("register", name, module) for name, module in self.module.APP_MODULE_MAPPINGS],
 		)
 		secondPlugin.terminate()
 

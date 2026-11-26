@@ -34,10 +34,10 @@ msgstr "Eine Bereichsmarke für Terminal Copy setzen oder löschen"
 msgid "Region marks cleared"
 msgstr "Bereichsmarken gelöscht"
 
-#. Translators: Announced when the review cursor is not in Windows Terminal's UIA text.
+#. Translators: Announced when the review cursor is not in supported terminal text.
 #: addon/appModules/terminalCopyWindowsterminal.py:98
-msgid "Move the review cursor to Windows Terminal text first"
-msgstr "Bewegen Sie zuerst den NVDA-Cursor auf Text in Windows Terminal"
+msgid "Move the review cursor to terminal text first"
+msgstr "Bewegen Sie zuerst den NVDA-Cursor auf Text im Terminal"
 
 #. Translators: Announced when region marks are placed in different terminal tabs or buffers.
 #: addon/appModules/terminalCopyWindowsterminal.py:104
@@ -54,10 +54,10 @@ msgstr "Anfangsmarke gesetzt"
 msgid "End mark set"
 msgstr "Endmarke gesetzt"
 
-#. Translators: Description of the command that copies the marked Windows Terminal region.
+#. Translators: Description of the command that copies the marked terminal region.
 #: addon/appModules/terminalCopyWindowsterminal.py:115
-msgid "Copy the marked Windows Terminal region"
-msgstr "Den markierten Bereich in Windows Terminal kopieren"
+msgid "Copy the marked terminal region"
+msgstr "Den markierten Bereich im Terminal kopieren"
 
 #. Translators: Announced when another Terminal Copy operation is still running.
 #: addon/appModules/terminalCopyWindowsterminal.py:123
@@ -95,8 +95,8 @@ msgstr "Der markierte Bereich konnte nicht kopiert werden"
 #. Translators: Long description to be shown for this add-on on add-on information from add-on store
 #: buildVars.py:28
 msgid ""
-"Copies regions from Windows Terminal using NVDA's review cursor,\n"
-"including available scrollback outside the visible viewport.\n"
+"Copies regions from Windows Terminal or classic Command Prompt using NVDA's review cursor.\n"
+"In Windows Terminal this includes available scrollback outside the visible viewport.\n"
 "The two-mark interaction is adapted from Terminal Access for NVDA by Pratik "
 "Patel:\n"
 "https://github.com/PratikP1/Terminal-Access-for-NVDA\n"
@@ -104,9 +104,8 @@ msgid ""
 "https://github.com/tspivey/tdsr\n"
 "https://github.com/linux-speakup/speakup"
 msgstr ""
-"Kopiert Bereiche aus Windows Terminal mit dem NVDA-Cursor,\n"
-"einschließlich verfügbarer Inhalte des Bildlaufpuffers außerhalb des "
-"sichtbaren Bereichs.\n"
+"Kopiert Bereiche aus Windows Terminal oder der klassischen Eingabeaufforderung mit dem NVDA-Cursor.\n"
+"In Windows Terminal sind auch verfügbare Inhalte außerhalb des sichtbaren Bereichs erreichbar.\n"
 "Die Bedienung mit zwei Marken wurde aus Terminal Access for NVDA von Pratik "
 "Patel übernommen:\n"
 "https://github.com/PratikP1/Terminal-Access-for-NVDA\n"
@@ -117,8 +116,8 @@ msgstr ""
 #. Translators: What's new text for this add-on version in the Add-on Store.
 #: buildVars.py:40
 msgid ""
-"Improves compatibility with other Windows Terminal add-ons by using a unique "
-"AppModule mapping."
+"Adds region copying in classic Windows Command Prompt and confirms "
+"compatibility with NVDA 2026.3.1."
 msgstr ""
-"Verbessert die Kompatibilität mit anderen Erweiterungen für Windows Terminal "
-"durch eine eindeutige AppModule-Zuordnung."
+"Ermöglicht das Kopieren markierter Bereiche in der klassischen Windows-"
+"Eingabeaufforderung und bestätigt die Kompatibilität mit NVDA 2026.3.1."

@@ -11,17 +11,19 @@ on:
   workflow_dispatch:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    # Building the add-on template as an add-on does not make sense (and fails).
-    # Do not modify this repo name with your own one! (should remain the template)
-    if: github.repository != 'nvaccess/addonTemplate'
-
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+        persist-credentials: false
     - name: Install uv
       uses: astral-sh/setup-uv@v10.0.1
       with:
@@ -42,11 +44,14 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       shell: bash
       run: |
-        addon_version="$(uv run python -c 'import buildVars; print(buildVars.addon_info["addon_version"])')"
+        addon_version="$(uv run python -c 'import buildVars; print(buildVars.getProductVersion())')"
+        uv run python -c 'import buildVars; raise SystemExit("Tagged builds require development_build = None" if buildVars.development_build is not None else 0)'
         if [[ "$GITHUB_REF_NAME" != "v$addon_version" ]]; then
           echo "Release tag $GITHUB_REF_NAME does not match add-on version $addon_version" >&2
           exit 1
         fi
+        git cat-file -e "refs/tags/${GITHUB_REF_NAME}^{tag}"
+        git merge-base --is-ancestor HEAD origin/main
 
     - name: Build add-on and translation template
       run: uv run scons pot && uv run scons
@@ -54,38 +59,13 @@ jobs:
     - name: Validate packaged add-on
       run: uv run python tests/package/test_built_addon.py
 
+    - name: Identify validated package
+      id: archive
+      run: |
+        archive="$(uv run python -c 'import buildVars; print(buildVars.addon_info["addon_name"] + "-" + buildVars.getArtifactVersion() + ".nvda-addon")')"
+        echo "path=$archive" >> "$GITHUB_OUTPUT"
     - uses: actions/upload-artifact@v7
       with:
-        name: packaged_addon
-        path: |
-          ./*.nvda-addon
+        path: ${{ steps.archive.outputs.path }}
         archive: false
-
-  upload_release:
-    runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    needs: ["build"]
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@v7
-    - name: download all artifacts
-      uses: actions/download-artifact@v8
-      with:
-        path: .
-        merge-multiple: true
-    - name: Display structure of downloaded files
-      run: ls -R
-    - name: Calculate sha256
-      run: |
-        echo -e "\nSHA256: " >> changelog.md
-        sha256sum *.nvda-addon >> changelog.md
-
-    - name: Release
-      uses: softprops/action-gh-release@v3
-      with:
-        files: |
-          *.nvda-addon
-        body_path: changelog.md
-        fail_on_unmatched_files: true
-        prerelease: ${{ contains(github.ref, '-') }}
+        if-no-files-found: error

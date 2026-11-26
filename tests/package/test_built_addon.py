@@ -20,7 +20,9 @@ EXPECTED_FILES = frozenset(
 	(
 		"manifest.ini",
 		"appModules/terminalCopyWindowsterminal.py",
+		"appModules/terminalCopyConsole.py",
 		"appModules/terminalCopy/__init__.py",
+		"appModules/terminalCopy/regionCopy.py",
 		"appModules/terminalCopy/selection.py",
 		"globalPlugins/terminalCopy.py",
 		"locale/de/manifest.ini",
@@ -38,7 +40,7 @@ class TestBuiltAddon(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.archivePath = ROOT / (
-			f"{buildVars.addon_info['addon_name']}-{buildVars.addon_info['addon_version']}.nvda-addon"
+			f"{buildVars.addon_info['addon_name']}-{buildVars.getArtifactVersion()}.nvda-addon"
 		)
 		if not cls.archivePath.is_file():
 			raise RuntimeError(f"Build the add-on before running package tests: {cls.archivePath}")
@@ -60,11 +62,10 @@ class TestBuiltAddon(unittest.TestCase):
 				BytesIO(archive.read("locale/de/LC_MESSAGES/nvda.mo")),
 			)
 		self.assertIn("name = terminalCopy", baseManifest)
-		self.assertIn("version = 0.1.1", baseManifest)
-		self.assertIn("lastTestedNVDAVersion = 2026.1.1", baseManifest)
-		self.assertIn("updateChannel = None", baseManifest)
-		self.assertNotIn("development", baseManifest.casefold())
-		self.assertIn("unique AppModule mapping", baseManifest)
+		for field in ("version", "lastTestedNVDAVersion", "updateChannel"):
+			with self.subTest(field=field):
+				self.assertIn(f"{field} = {buildVars.addon_info[f'addon_{field}']}", baseManifest.splitlines())
+		self.assertNotIn("-dev.", baseManifest)
 		self.assertIn('summary = "Terminal Copy"', germanManifest)
 		self.assertIn("Terminal Access for NVDA by Pratik Patel", baseManifest)
 		self.assertIn("Terminal Access for NVDA von Pratik Patel", germanManifest)
@@ -72,6 +73,11 @@ class TestBuiltAddon(unittest.TestCase):
 		self.assertIn("TDSR von Tyler Spivey und Speakup", germanManifest)
 		self.assertIn("https://github.com/tspivey/tdsr", baseManifest)
 		self.assertIn("https://github.com/linux-speakup/speakup", germanManifest)
+		changelog = buildVars.addon_info["addon_changelog"]
+		germanChangelog = translations.gettext(changelog)
+		self.assertNotEqual(changelog, germanChangelog)
+		self.assertIn(f'changelog = """{changelog}"""', baseManifest)
+		self.assertIn(f'changelog = """{germanChangelog}"""', germanManifest)
 		self.assertIn('<html lang="en">', englishHelp)
 		self.assertIn('<html lang="de">', germanHelp)
 		self.assertIn("Trailing whitespace is removed from every", englishHelp)

@@ -1,6 +1,10 @@
 # Build customizations
 # Change this file instead of sconstruct or manifest files, whenever possible.
 
+import re
+import subprocess
+from pathlib import Path
+
 from site_scons.site_tools.NVDATool.typings import (
 	AddonInfo,
 	BrailleTables,
@@ -15,6 +19,10 @@ from site_scons.site_tools.NVDATool.typings import (
 # which returns whatever is given to it as an argument.
 from site_scons.site_tools.NVDATool.utils import _
 
+# None identifies an approved release state.
+development_build: int | None = 2
+release_channel = "stable"
+
 # Add-on information variables
 addon_info = AddonInfo(
 	# add-on Name/identifier, internal for NVDA
@@ -25,8 +33,8 @@ addon_info = AddonInfo(
 	addon_summary=_("Terminal Copy"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
-	addon_description=_("""Copies regions from Windows Terminal using NVDA's review cursor,
-including available scrollback outside the visible viewport.
+	addon_description=_("""Copies regions from Windows Terminal or classic Command Prompt using NVDA's review cursor.
+In Windows Terminal this includes available scrollback outside the visible viewport.
 The two-mark interaction is adapted from Terminal Access for NVDA by Pratik Patel:
 https://github.com/PratikP1/Terminal-Access-for-NVDA
 Terminal Access credits TDSR by Tyler Spivey and Speakup as inspirations:
@@ -37,7 +45,7 @@ https://github.com/linux-speakup/speakup"""),
 	# Brief changelog for this version
 	addon_changelog=_(
 		# Translators: What's new text for this add-on version in the Add-on Store.
-		"""Improves compatibility with other Windows Terminal add-ons by using a unique AppModule mapping.""",
+		"Adds region copying in classic Windows Command Prompt and confirms compatibility with NVDA 2026.3.1.",
 	),
 	# Author(s)
 	addon_author="Emanuel Helms <emanuel@helmsaccess.de>",
@@ -50,16 +58,53 @@ https://github.com/linux-speakup/speakup"""),
 	# Minimum NVDA version supported (e.g. "2019.3.0", minor version is optional)
 	addon_minimumNVDAVersion="2026.1.0",
 	# Last NVDA version supported/tested (e.g. "2024.4.0", ideally more recent than minimum version)
-	addon_lastTestedNVDAVersion="2026.1.1",
-	# Add-on update channel (default is None, denoting stable releases,
-	# and for development releases, use "dev".)
-	# Do not change unless you know what you are doing!
-	addon_updateChannel=None,
+	addon_lastTestedNVDAVersion="2026.3.1",
+	# The template represents the default stable channel as None.
+	addon_updateChannel=None if release_channel == "stable" else release_channel,
 	# Add-on license such as GPL 2
 	addon_license="GNU General Public License version 2 only",
 	# URL for the license document the ad-on is licensed under
 	addon_licenseURL="https://github.com/helmsaccess/terminal-copy/blob/main/COPYING.txt",
 )
+
+
+def getProductVersion() -> str:
+	"""Return the canonical three-part version installed by NVDA."""
+	version = addon_info["addon_version"]
+	if re.fullmatch(r"(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2}", version) is None:
+		raise ValueError(f"Invalid product version: {version!r}")
+	if release_channel not in {"stable", "beta", "dev"}:
+		raise ValueError(f"Invalid release channel: {release_channel!r}")
+	return version
+
+
+def getGitValue(*arguments: str) -> str:
+	"""Read optional Git metadata from the build source tree."""
+	try:
+		result = subprocess.run(
+			("git", "-C", str(Path(__file__).resolve().parent), *arguments),
+			capture_output=True,
+			text=True,
+			check=True,
+		)
+	except (OSError, subprocess.CalledProcessError):
+		return ""
+	return result.stdout.strip()
+
+
+def getArtifactVersion() -> str:
+	"""Return the version used in the archive filename."""
+	version = getProductVersion()
+	if development_build is None:
+		return version
+	if development_build < 1:
+		raise ValueError("The development build number must be positive.")
+	branch = re.sub(r"[^A-Za-z0-9-]+", ".", getGitValue("branch", "--show-current")).strip(".")
+	commit = getGitValue("rev-parse", "--short=8", "HEAD")
+	metadata = ".".join(value for value in (branch, commit) if value)
+	suffix = f"+{metadata}" if metadata else ""
+	return f"{version}-dev.{development_build}{suffix}"
+
 
 # Define the python files that are the sources of your add-on.
 # You can either list every file (using ""/") as a path separator,

@@ -89,10 +89,11 @@ System, developer, and explicit user instructions take precedence.
 
 ## Accessibility and NVDA integration
 
-- Keep Windows Terminal-specific scripts, events, UIA access, and lifecycle in the
-  uniquely mapped `addon/appModules/terminalCopyWindowsterminal.py` or its private
-  package. The global plugin may only register and unregister this executable mapping;
-  document and test that exception.
+- Keep terminal-specific scripts, text access, and lifecycle in the uniquely mapped
+  `terminalCopyWindowsterminal` and `terminalCopyConsole` AppModules or their shared
+  `addon/appModules/terminalCopy/` package. The global plugin only maintains the
+  executable mappings. Validate classic-console focus and legacy viewport ownership
+  before reading the buffer.
 - Define contextual commands with NVDA's `@script` decorator, including translated
   descriptions and categories, so bindings remain discoverable and remappable.
 - Use speech, Braille, tones, and focus changes intentionally; avoid duplicate or
@@ -142,12 +143,19 @@ System, developer, and explicit user instructions take precedence.
 ## Git, versioning, and releases
 
 - Never use destructive Git operations or discard work that may belong to the user.
-- Do not push, merge, tag, publish a package, or create a GitHub release without
-  explicit user authorization.
 - Use focused branches and coherent English commit messages for substantial changes.
-- The user owns version numbers, release channels, tags, and publication approval.
-- Treat a tag as a publication action: the official workflow may build and publish a
-  GitHub release for every pushed tag.
+- Push validated working branches to their matching GitHub branches independently.
+  Every change to `main`, including release preparation and hotfixes, uses a pull
+  request. Direct pushes to `main` are prohibited. Obtain the user's explicit
+  approval before opening each pull request, including drafts. Include an English
+  changelog covering the full diff. Merge, tag and publication approval are separate.
+- The user approves the product version, channel and release state. Keep the NVDA
+  manifest version numeric. Start `development_build` at 1 on each new branch and
+  increment it for changed installable states. Use `None` for an approved release.
+- Record notable changes under `Unreleased` in `changelog.md`. Follow
+  [CONTRIBUTING.md](CONTRIBUTING.md) and the [release guide](docs/release-and-versioning.md)
+  for the release and Store checklist. CI builds and verifies tag artifacts with
+  read-only repository permissions. GitHub publication and Store submission are explicit steps.
 - Before publication, validate the base and localized manifests against the current
   official NVDA AddonTemplate and NVDA add-on requirements. Unknown, malformed, or
   empty applicable fields are release blockers.
