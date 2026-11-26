@@ -2,8 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- Copy marked text in classic Windows Command Prompt using the same review-cursor gestures
+  as in Windows Terminal. Use the console text exposed by NVDA through UI Automation or its
+  legacy console backend.
+
 ### Changed
 
+- Confirm compatibility with NVDA 2026.3.1 and update the manifest's last-tested API version.
 - Give SCons development archives a branch-local build identifier while keeping the NVDA manifest
   version numeric. Validate the product version and keep release artifacts independent of GitHub publication.
 - Build and verify tag artifacts in CI. Publish the single add-on from an approved GitHub release draft.

@@ -33,8 +33,8 @@ addon_info = AddonInfo(
 	addon_summary=_("Terminal Copy"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
-	addon_description=_("""Copies regions from Windows Terminal using NVDA's review cursor,
-including available scrollback outside the visible viewport.
+	addon_description=_("""Copies regions from Windows Terminal or classic Command Prompt using NVDA's review cursor.
+In Windows Terminal this includes available scrollback outside the visible viewport.
 The two-mark interaction is adapted from Terminal Access for NVDA by Pratik Patel:
 https://github.com/PratikP1/Terminal-Access-for-NVDA
 Terminal Access credits TDSR by Tyler Spivey and Speakup as inspirations:
@@ -58,7 +58,7 @@ https://github.com/linux-speakup/speakup"""),
 	# Minimum NVDA version supported (e.g. "2019.3.0", minor version is optional)
 	addon_minimumNVDAVersion="2026.1.0",
 	# Last NVDA version supported/tested (e.g. "2024.4.0", ideally more recent than minimum version)
-	addon_lastTestedNVDAVersion="2026.1.1",
+	addon_lastTestedNVDAVersion="2026.3.1",
 	# The template represents the default stable channel as None.
 	addon_updateChannel=None if release_channel == "stable" else release_channel,
 	# Add-on license such as GPL 2

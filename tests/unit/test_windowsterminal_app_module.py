@@ -6,7 +6,7 @@ import inspect
 import logging
 from pathlib import Path
 import sys
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -60,7 +60,7 @@ class FakeUIATextInfo:
 		return self.document[self.start : self.end]
 
 	def copy(self) -> "FakeUIATextInfo":
-		return FakeUIATextInfo(self.document, self.start, self.obj, self.end)
+		return type(self)(self.document, self.start, self.obj, self.end)
 
 	def collapse(self, end: bool = False) -> None:
 		if end:
@@ -109,6 +109,27 @@ class ImmediateThread:
 		return self._isAlive
 
 
+class FakeLegacyTextInfo(FakeUIATextInfo):
+	"""Legacy range with viewport-relative offsets and native newline formatting."""
+
+	@property
+	def consoleScreenBufferInfo(self):
+		return SimpleNamespace(
+			dwSize=SimpleNamespace(x=80),
+			srWindow=SimpleNamespace(Left=0, Top=self.obj.viewportTop, Right=79, Bottom=24),
+		)
+
+	def __init__(self, document, start=None, obj=None, end=None):
+		if start == "first":
+			obj = document
+			document, start = "", 0
+		super().__init__(document, start, obj, end)
+
+	@property
+	def clipboardText(self):
+		return "\r\n".join(self.text.splitlines())
+
+
 class TestWindowsTerminalAppModule(unittest.TestCase):
 	"""Exercise the user-facing mark and copy workflow with mocked NVDA APIs."""
 
@@ -139,6 +160,7 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		appModuleHandler.AppModule = FakeBaseAppModule
 		comtypes = ModuleType("comtypes")
 		comtypes.COINIT_MULTITHREADED = 0
+		comtypes.COMError = type("COMError", (Exception,), {})
 		comtypes.CoInitializeEx = lambda flags: None
 		comtypes.CoUninitialize = lambda: None
 		inputCore = ModuleType("inputCore")
@@ -149,6 +171,10 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		nvdaObjects.__path__ = []
 		nvdaObjectsUIA = ModuleType("NVDAObjects.UIA")
 		nvdaObjectsUIA.UIATextInfo = FakeUIATextInfo
+		winConsoleHandler = ModuleType("winConsoleHandler")
+		winConsoleHandler.WinConsoleTextInfo = FakeLegacyTextInfo
+		textInfos = ModuleType("textInfos")
+		textInfos.TextInfo = FakeUIATextInfo
 		cls.queueHandler = ModuleType("queueHandler")
 		cls.queueHandler.eventQueue = object()
 		cls.queueHandler.queueFunction = lambda queue, function, *args: function(*args)
@@ -172,7 +198,9 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 			"NVDAObjects.UIA": nvdaObjectsUIA,
 			"queueHandler": cls.queueHandler,
 			"scriptHandler": scriptHandler,
+			"textInfos": textInfos,
 			"ui": cls.ui,
+			"winConsoleHandler": winConsoleHandler,
 			"utils": utils,
 			"utils.security": security,
 		}
@@ -180,11 +208,18 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		sys.modules.update(cls._stubNames)
 		cls.moduleName = "appModules.terminalCopyWindowsterminal"
 		cls.module = importlib.import_module(cls.moduleName)
-		cls.module.threading.Thread = ImmediateThread
+		cls.sharedModuleName = "appModules.terminalCopy.regionCopy"
+		cls.consoleModuleName = "appModules.terminalCopyConsole"
+		cls.consoleModule = importlib.import_module(cls.consoleModuleName)
+		cls.threadPatch = mock.patch(f"{cls.sharedModuleName}.threading.Thread", ImmediateThread)
+		cls.threadPatch.start()
+		cls.addClassCleanup(cls.threadPatch.stop)
 
 	@classmethod
 	def tearDownClass(cls) -> None:
 		sys.modules.pop(cls.moduleName, None)
+		sys.modules.pop(cls.sharedModuleName, None)
+		sys.modules.pop(cls.consoleModuleName, None)
 		for name, original in cls._originalModules.items():
 			if original is None:
 				sys.modules.pop(name, None)
@@ -240,7 +275,6 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		try:
 			with mock.patch.dict(sys.modules, {"appModules.windowsterminal": companionModule}):
 				compatibleModule = importlib.import_module(self.moduleName)
-				compatibleModule.threading.Thread = ImmediateThread
 				compatibleAppModule = compatibleModule.AppModule(42, "windowsterminal")
 				self.assertIs(compatibleModule.BaseAppModule, FakeCompanionAppModule)
 				self.assertIsInstance(compatibleAppModule, FakeCompanionAppModule)
@@ -358,6 +392,56 @@ class TestWindowsTerminalAppModule(unittest.TestCase):
 		self.appModule.script_copyRegion(object())
 		self.assertEqual(self.copiedText, [])
 		self.assertEqual(self.messages[-1], "The marked region is no longer available")
+
+	def setClassicMarks(self, textInfo, windowClass="ConsoleWindowClass"):
+		app = self.consoleModule.AppModule(43, "cmd")
+		owner = SimpleNamespace(
+			appModule=app, windowClassName=windowClass, UIATextPattern=object(), viewportTop=0,
+		)
+		self.api.getFocusObject = lambda: owner
+		for offset in (0, 8):
+			self.api.getReviewPosition = lambda: textInfo("one\ntwo Z", offset, owner)
+			app.script_toggleRegionMark(object())
+		return app, owner
+
+	def testClassicConsoleCopiesUIARange(self) -> None:
+		app, _ = self.setClassicMarks(FakeUIATextInfo)
+		app.script_copyRegion(object())
+		self.assertEqual(self.copiedText, ["one\ntwo Z"])
+
+	def testClassicConsoleCopiesLegacyRangeWithLineBreaks(self) -> None:
+		app, _ = self.setClassicMarks(FakeLegacyTextInfo)
+		app.script_copyRegion(object())
+		self.assertEqual(self.copiedText, ["one\r\ntwo Z"])
+
+	def testClassicCopyRejectsChangedLegacyViewport(self) -> None:
+		app, owner = self.setClassicMarks(FakeLegacyTextInfo)
+		owner.viewportTop = 2
+		app.script_copyRegion(object())
+		self.assertEqual(self.copiedText, [])
+		self.assertEqual(self.messages[-1], "The marked region is no longer available")
+
+	def testClassicFirstMarkStartsOverAfterLegacyViewportChanges(self) -> None:
+		app = self.consoleModule.AppModule(43, "cmd")
+		owner = SimpleNamespace(appModule=app, windowClassName="ConsoleWindowClass", viewportTop=0)
+		self.api.getFocusObject = lambda: owner
+		self.api.getReviewPosition = lambda: FakeLegacyTextInfo("first", 0, owner)
+		app.script_toggleRegionMark(object())
+		owner.viewportTop = 2
+		app.script_toggleRegionMark(object())
+		self.assertEqual(self.messages, ["Anfangsmarke gesetzt", "Anfangsmarke gesetzt"])
+
+	def testClassicCopyRejectsFocusInAnotherWindow(self) -> None:
+		app, _ = self.setClassicMarks(FakeLegacyTextInfo)
+		self.api.getFocusObject = object
+		app.script_copyRegion(object())
+		self.assertEqual(self.copiedText, [])
+
+	def testClassicCommandsRejectNonConsoleReviewText(self) -> None:
+		app, _ = self.setClassicMarks(FakeUIATextInfo, "OtherWindow")
+		app.script_copyRegion(object())
+		self.assertEqual(self.copiedText, [])
+		self.assertIn("Move the review cursor to terminal text first", self.messages)
 
 
 if __name__ == "__main__":

@@ -161,7 +161,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertEqual("Emanuel Helms <emanuel@helmsaccess.de>", manifest["author"])
 		self.assertEqual("https://github.com/helmsaccess/terminal-copy", manifest["url"])
 		self.assertEqual("2026.1.0", manifest["minimumNVDAVersion"])
-		self.assertEqual("2026.1.1", manifest["lastTestedNVDAVersion"])
+		self.assertEqual(buildVars.addon_info["addon_lastTestedNVDAVersion"], manifest["lastTestedNVDAVersion"])
 		self.assertIn("Pratik Patel", manifest["description"])
 		self.assertIn("https://github.com/PratikP1/Terminal-Access-for-NVDA", manifest["description"])
 		self.assertIn("TDSR by Tyler Spivey", manifest["description"])

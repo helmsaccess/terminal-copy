@@ -20,7 +20,9 @@ EXPECTED_FILES = frozenset(
 	(
 		"manifest.ini",
 		"appModules/terminalCopyWindowsterminal.py",
+		"appModules/terminalCopyConsole.py",
 		"appModules/terminalCopy/__init__.py",
+		"appModules/terminalCopy/regionCopy.py",
 		"appModules/terminalCopy/selection.py",
 		"globalPlugins/terminalCopy.py",
 		"locale/de/manifest.ini",

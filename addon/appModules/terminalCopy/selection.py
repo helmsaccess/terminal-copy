@@ -1,5 +1,6 @@
 """Build a stable text range from two NVDA review positions."""
 
+from collections.abc import Callable
 from enum import Enum, auto
 from typing import Protocol, Self
 
@@ -96,6 +97,11 @@ class SelectionController:
 		self._textContainer: object | None = None
 
 	@property
+	def hasStart(self) -> bool:
+		"""Return whether the first mark is available."""
+		return self._startMark is not None
+
+	@property
 	def isComplete(self) -> bool:
 		"""Return whether both selection marks have been set."""
 		return self._startMark is not None and self._endMark is not None
@@ -137,17 +143,20 @@ class SelectionController:
 		self._endMark = None
 		self._textContainer = None
 
-	def buildRange(self) -> TextRange:
+	def buildRange(self, validateSource: Callable[[TextRange], None] | None = None) -> TextRange:
 		"""Create a forward, character-inclusive range between both marks.
 
-		The stored UIA ranges are used directly. This deliberately avoids
+		The stored review ranges are used directly. This deliberately avoids
 		``POSITION_ALL``, which NVDA bounds to the visible Windows Terminal viewport.
 
+		:param validateSource: Optional safety check before querying the stored range.
 		:return: A new range covering both marked characters.
 		:raises IncompleteSelectionError: If either mark is missing.
 		"""
 		if self._startMark is None or self._endMark is None:
 			raise IncompleteSelectionError
+		if validateSource is not None:
+			validateSource(self._startMark)
 		start = self._startMark.copy()
 		end = self._endMark.copy()
 		start.collapse()

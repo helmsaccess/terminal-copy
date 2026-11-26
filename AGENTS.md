@@ -89,10 +89,11 @@ System, developer, and explicit user instructions take precedence.
 
 ## Accessibility and NVDA integration
 
-- Keep Windows Terminal-specific scripts, events, UIA access, and lifecycle in the
-  uniquely mapped `addon/appModules/terminalCopyWindowsterminal.py` or its private
-  package. The global plugin may only register and unregister this executable mapping;
-  document and test that exception.
+- Keep terminal-specific scripts, text access, and lifecycle in the uniquely mapped
+  `terminalCopyWindowsterminal` and `terminalCopyConsole` AppModules or their shared
+  `addon/appModules/terminalCopy/` package. The global plugin only maintains the
+  executable mappings. Validate classic-console focus and legacy viewport ownership
+  before reading the buffer.
 - Define contextual commands with NVDA's `@script` decorator, including translated
   descriptions and categories, so bindings remain discoverable and remappable.
 - Use speech, Braille, tones, and focus changes intentionally; avoid duplicate or
