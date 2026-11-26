@@ -8,6 +8,7 @@ import shutil
 import tempfile
 import tomllib
 import unittest
+from unittest import mock
 from urllib.parse import urlsplit
 
 import buildVars
@@ -47,7 +48,7 @@ description = """{addon_description}"""
 changelog = """{addon_changelog}"""
 '''
 API_VERSION = re.compile(r"^(?:0|[1-9]\d{3})\.\d+(?:\.\d+)?$")
-ADDON_VERSION = re.compile(r"^\d+\.\d+(?:\.\d+)?$")
+ADDON_VERSION = re.compile(r"^(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2}$")
 ADDON_NAME = re.compile(r"^[a-z][A-Za-z0-9]*$")
 AUTHOR_WITH_EMAIL = re.compile(r"^.+\s<[^<>\s@]+@[^<>\s@]+>$")
 
@@ -126,15 +127,37 @@ class TestManifestContract(unittest.TestCase):
 		self.assertTrue(url.hostname)
 		self.assertIsNone(url.username)
 		self.assertIsNone(url.password)
-		self.assertEqual("None", manifest["updateChannel"])
-		self.assertIsNone(buildVars.addon_info["addon_updateChannel"])
+		self.assertIn(buildVars.release_channel, {"stable", "beta", "dev"})
+		self.assertEqual(
+			"None" if buildVars.release_channel == "stable" else buildVars.release_channel,
+			manifest["updateChannel"],
+		)
+
+	def testDevelopmentIdentityIsSeparateFromNVDAProductVersion(self) -> None:
+		with (
+			mock.patch.object(buildVars, "getGitValue", side_effect=("codex/fix-name", "1234abcd")),
+			mock.patch.object(buildVars, "development_build", 1),
+		):
+			self.assertEqual(
+				f"{buildVars.getProductVersion()}-dev.1+codex.fix-name.1234abcd",
+				buildVars.getArtifactVersion(),
+			)
+			self.assertEqual(buildVars.getProductVersion(), buildVars.addon_info["addon_version"])
+		with mock.patch.object(buildVars, "development_build", None):
+			self.assertEqual(buildVars.getProductVersion(), buildVars.getArtifactVersion())
+
+	def testInvalidProductVersionsCannotNameAPackage(self) -> None:
+		for version in ("01.2.3", "1.02.3", "1.2.03", "1.2", "1.2.3-beta", "1.2.3.4"):
+			with self.subTest(version=version), mock.patch.dict(buildVars.addon_info, addon_version=version):
+				with self.assertRaisesRegex(ValueError, "Invalid product version"):
+					buildVars.getArtifactVersion()
 
 	def testProjectIdentityAndBuildOnlyMetadataStayAligned(self) -> None:
 		"""User identity, compatibility, and Store-only fields remain intentional."""
 		manifest = parseManifest(OFFICIAL_BASE_TEMPLATE.format(**buildVars.addon_info))
 		self.assertEqual("terminalCopy", manifest["name"])
 		self.assertEqual("Terminal Copy", manifest["summary"])
-		self.assertEqual("0.1.1", manifest["version"])
+		self.assertEqual(buildVars.getProductVersion(), manifest["version"])
 		self.assertEqual("Emanuel Helms <emanuel@helmsaccess.de>", manifest["author"])
 		self.assertEqual("https://github.com/helmsaccess/terminal-copy", manifest["url"])
 		self.assertEqual("2026.1.0", manifest["minimumNVDAVersion"])
@@ -144,7 +167,7 @@ class TestManifestContract(unittest.TestCase):
 		self.assertIn("TDSR by Tyler Spivey", manifest["description"])
 		self.assertIn("https://github.com/tspivey/tdsr", manifest["description"])
 		self.assertIn("https://github.com/linux-speakup/speakup", manifest["description"])
-		self.assertIn("unique AppModule mapping", manifest["changelog"])
+		self.assertEqual(buildVars.addon_info["addon_changelog"], manifest["changelog"])
 		self.assertNotIn("sourceURL", manifest)
 		self.assertNotIn("license", manifest)
 		self.assertEqual(manifest["url"], buildVars.addon_info["addon_sourceURL"])

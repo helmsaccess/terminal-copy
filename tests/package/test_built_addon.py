@@ -38,7 +38,7 @@ class TestBuiltAddon(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.archivePath = ROOT / (
-			f"{buildVars.addon_info['addon_name']}-{buildVars.addon_info['addon_version']}.nvda-addon"
+			f"{buildVars.addon_info['addon_name']}-{buildVars.getArtifactVersion()}.nvda-addon"
 		)
 		if not cls.archivePath.is_file():
 			raise RuntimeError(f"Build the add-on before running package tests: {cls.archivePath}")
@@ -60,11 +60,10 @@ class TestBuiltAddon(unittest.TestCase):
 				BytesIO(archive.read("locale/de/LC_MESSAGES/nvda.mo")),
 			)
 		self.assertIn("name = terminalCopy", baseManifest)
-		self.assertIn("version = 0.1.1", baseManifest)
-		self.assertIn("lastTestedNVDAVersion = 2026.1.1", baseManifest)
-		self.assertIn("updateChannel = None", baseManifest)
-		self.assertNotIn("development", baseManifest.casefold())
-		self.assertIn("unique AppModule mapping", baseManifest)
+		for field in ("version", "lastTestedNVDAVersion", "updateChannel"):
+			with self.subTest(field=field):
+				self.assertIn(f"{field} = {buildVars.addon_info[f'addon_{field}']}", baseManifest.splitlines())
+		self.assertNotIn("-dev.", baseManifest)
 		self.assertIn('summary = "Terminal Copy"', germanManifest)
 		self.assertIn("Terminal Access for NVDA by Pratik Patel", baseManifest)
 		self.assertIn("Terminal Access for NVDA von Pratik Patel", germanManifest)
