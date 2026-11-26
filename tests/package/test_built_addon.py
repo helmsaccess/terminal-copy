@@ -73,6 +73,11 @@ class TestBuiltAddon(unittest.TestCase):
 		self.assertIn("TDSR von Tyler Spivey und Speakup", germanManifest)
 		self.assertIn("https://github.com/tspivey/tdsr", baseManifest)
 		self.assertIn("https://github.com/linux-speakup/speakup", germanManifest)
+		changelog = buildVars.addon_info["addon_changelog"]
+		germanChangelog = translations.gettext(changelog)
+		self.assertNotEqual(changelog, germanChangelog)
+		self.assertIn(f'changelog = """{changelog}"""', baseManifest)
+		self.assertIn(f'changelog = """{germanChangelog}"""', germanManifest)
 		self.assertIn('<html lang="en">', englishHelp)
 		self.assertIn('<html lang="de">', germanHelp)
 		self.assertIn("Trailing whitespace is removed from every", englishHelp)

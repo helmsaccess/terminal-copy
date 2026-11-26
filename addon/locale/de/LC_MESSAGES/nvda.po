@@ -116,8 +116,8 @@ msgstr ""
 #. Translators: What's new text for this add-on version in the Add-on Store.
 #: buildVars.py:40
 msgid ""
-"Improves compatibility with other Windows Terminal add-ons by using a unique "
-"AppModule mapping."
+"Adds region copying in classic Windows Command Prompt and confirms "
+"compatibility with NVDA 2026.3.1."
 msgstr ""
-"Verbessert die Kompatibilität mit anderen Erweiterungen für Windows Terminal "
-"durch eine eindeutige AppModule-Zuordnung."
+"Ermöglicht das Kopieren markierter Bereiche in der klassischen Windows-"
+"Eingabeaufforderung und bestätigt die Kompatibilität mit NVDA 2026.3.1."

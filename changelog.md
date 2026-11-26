@@ -11,6 +11,7 @@
 ### Changed
 
 - Confirm compatibility with NVDA 2026.3.1 and update the manifest's last-tested API version.
+- Update the English and German manifest summaries to describe classic Command Prompt support.
 - Give SCons development archives a branch-local build identifier while keeping the NVDA manifest
   version numeric. Validate the product version and keep release artifacts independent of GitHub publication.
 - Build and verify tag artifacts in CI. Publish the single add-on from an approved GitHub release draft.

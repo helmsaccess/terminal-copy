@@ -20,7 +20,7 @@ from site_scons.site_tools.NVDATool.typings import (
 from site_scons.site_tools.NVDATool.utils import _
 
 # None identifies an approved release state.
-development_build: int | None = 1
+development_build: int | None = 2
 release_channel = "stable"
 
 # Add-on information variables
@@ -45,7 +45,7 @@ https://github.com/linux-speakup/speakup"""),
 	# Brief changelog for this version
 	addon_changelog=_(
 		# Translators: What's new text for this add-on version in the Add-on Store.
-		"""Improves compatibility with other Windows Terminal add-ons by using a unique AppModule mapping.""",
+		"Adds region copying in classic Windows Command Prompt and confirms compatibility with NVDA 2026.3.1.",
 	),
 	# Author(s)
 	addon_author="Emanuel Helms <emanuel@helmsaccess.de>",
